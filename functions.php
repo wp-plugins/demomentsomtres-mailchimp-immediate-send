@@ -127,11 +127,17 @@ function dmst_mc_immediate_content_published($postID) {
         $oldlog = get_metadata($posttype, $postID, DMST_MC_IMMEDIATE_META_LOG, true);
         $log = '';
         $log .= date('Y/m/d H:i:s ') . __('Start to send', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n";
+//        $log .= date('Y/m/d H:i:s ') . __('Available taxonomies', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . print_r($taxonomies, true) . "\n";
+//        $log .= date('Y/m/d H:i:s ') . __('Option taxonomies', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . print_r($optionTaxonomies, true) . "\n";
+//        $log .= date('Y/m/d H:i:s ') . __('Selected taxonomies are:', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . print_r($taxonomiesToSend, true) . "\n";
         foreach ($taxonomiesToSend as $taxonomy):
             $terms = wp_get_post_terms($postID, $taxonomy);
             $optionTerms = dmst_mc_immediate_getoption_posttype_taxonomy_terms($posttype, $taxonomy);
+//            $log .= date('Y/m/d H:i:s ') . __('Available terms:', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . print_r($terms, true) . "\n";
+//            $log .= date('Y/m/d H:i:s ') . __('Option terms:', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . print_r($optionTerms, true) . "\n";
             foreach ($terms as $term):
                 if (in_array($term->slug, $optionTerms)):
+//                    $log .= date('Y/m/d H:i:s ') . __('Processing term:', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . $term->slug . "\n";
                     $listID = dmst_mc_immediate_getoption_listId($posttype, $taxonomy, $term->slug);
                     if ($listID):
                         $templateID = dmst_mc_immediate_getoption_templateId($posttype, $taxonomy, $term->slug);
@@ -146,8 +152,9 @@ function dmst_mc_immediate_content_published($postID) {
                         else:
                             $log .= date('Y/m/d H:i:s ') . __('Error: Campaign not created.', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n";
                         endif;
+                    else:
+                        $log .= date('Y/m/d H:i:s ') . __('Error: List not found.', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . print_r($listID, true) . "\n";
                     endif;
-                    $log .= "\n";
                 endif;
             endforeach;
         endforeach;
@@ -279,7 +286,7 @@ function dmst_mc_immediate_getoption_listId($p, $tx, $t) {
     $t1 = dmst_admin_helper_get_option(DMST_MC_IMMEDIATE_OPTIONS, 'lists', array());
     $t2 = (isset($t1[$p])) ? $t1[$p] : array();
     $terms = (isset($t2[$tx])) ? $t2[$tx] : array();
-    $listid = (isset($terms[t])) ? isset($terms[t]) : null;
+    $listid = (isset($terms[$t])) ? $terms[$t] : null;
     return $listid;
 }
 
@@ -294,7 +301,7 @@ function dmst_mc_immediate_getoption_templateId($p, $tx, $t) {
     $t1 = dmst_admin_helper_get_option(DMST_MC_IMMEDIATE_OPTIONS, 'templates', array());
     $t2 = (isset($t1[$p])) ? $t1[$p] : array();
     $terms = (isset($t2[$tx])) ? $t2[$tx] : array();
-    $id = (isset($terms[t])) ? isset($terms[t]) : null;
+    $id = (isset($terms[$t])) ? $terms[$t] : null;
     return $id;
 }
 

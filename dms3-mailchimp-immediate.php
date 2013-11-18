@@ -3,7 +3,7 @@
 Plugin Name: DeMomentSomTres MailChimp Immediate Send
 Plugin URI: http://demomentsomtres.com/english/wordpress-plugin-mailchimp-immediate-send/
 Description: Immediate notifications via Mailchimp
-Version: 1.0
+Version: 1.0.1
 Author: Marc Queralt
 Author URI: http://demomentsomtres.com
 */
