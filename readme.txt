@@ -70,6 +70,9 @@ TBD
 
 == Changelog ==
 
+= 1.0.2 =
+* remove internal git references
+
 = 1.0.1 = 
 * Template support error solved
 
