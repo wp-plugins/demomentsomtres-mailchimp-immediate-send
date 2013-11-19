@@ -3,13 +3,14 @@
 Plugin Name: DeMomentSomTres MailChimp Immediate Send
 Plugin URI: http://demomentsomtres.com/english/wordpress-plugin-mailchimp-immediate-send/
 Description: Immediate notifications via Mailchimp
-Version: 1.0.2
+Version: 1.0.3
 Author: Marc Queralt
 Author URI: http://demomentsomtres.com
 */
 
 define('DMST_MC_IMMEDIATE_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('DMST_MC_IMMEDIATE_PLUGIN_PATH', plugin_dir_path(__FILE__));
+define('DMST_MC_IMMEDIATE_LANG_DIR',dirname( plugin_basename( __FILE__ ) ).'/languages');
 define('DMST_MC_IMMEDIATE_TEXT_DOMAIN', 'DeMomentSomTres-MailChimp-Immediate');
 define('DMST_MC_IMMEDIATE_OPTIONS', 'dmst_mc_immediate_options');
 define('DMST_MC_IMMEDIATE_META_LOG','dms3_mc_imm_log'); /** the meta field containing the log */
@@ -25,7 +26,7 @@ if (!function_exists('add_action')) {
     exit;
 }
 
-load_plugin_textdomain(DMST_MC_IMMEDIATE_TEXT_DOMAIN, false, DMST_MC_IMMEDIATE_PLUGIN_URL . '/languages');
+add_action('plugins_loaded','dmst_mc_immediate_plugin_init');
 
 // Get our MailChimp API class in scope
 if (!class_exists('DeMomentSomTresMailChimp')) {

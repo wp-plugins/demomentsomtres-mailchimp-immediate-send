@@ -1,6 +1,13 @@
 <?php
 
 /**
+ * @since 1.0.3
+ */
+function dmst_mc_immediate_plugin_init() {
+    load_plugin_textdomain(DMST_MC_IMMEDIATE_TEXT_DOMAIN, false, DMST_MC_IMMEDIATE_LANG_DIR);
+}
+
+/**
  * 
  * @return array
  * @since 1.0
@@ -13,7 +20,7 @@ function dmst_mc_immediate_get_posttypes() {
 /**
  * Init mailchim session
  * @since 1.0
- * @return \DeMomentSomTresMailChimp|null
+ * @return DeMomentSomTresMailChimp|null
  */
 function dmst_mc_immediate_init() {
     global $DeMomentSomTres_MC_IM_Session;

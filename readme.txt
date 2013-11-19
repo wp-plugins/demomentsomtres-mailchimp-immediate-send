@@ -70,6 +70,9 @@ TBD
 
 == Changelog ==
 
+= 1.0.3 =
+* catalan translation
+
 = 1.0.2 =
 * remove internal git references
 
