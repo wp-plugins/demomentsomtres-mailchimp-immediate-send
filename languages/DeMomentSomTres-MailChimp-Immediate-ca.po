@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: DeMomentSomTres MailChimp Immediate Send v1.0.2\n"
+"Project-Id-Version: DeMomentSomTres MailChimp Immediate Send v1.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-11-19 11:20:05+0000\n"
+"PO-Revision-Date: 2014-02-12 13:59:52+0000\n"
 "Last-Translator: Marc Queralt <marc@demomentsomtres.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -100,38 +100,64 @@ msgstr "--- No enviar ---"
 msgid "--- Default ---"
 msgstr "--- Per defecte ---"
 
-#: functions.php:98
+#: functions.php:105
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "CURL not installed and required"
 msgstr "Es requereix CURL i no està instal·lat"
 
-#: functions.php:129
+#: functions.php:145
+#: functions.php:196
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "Start to send"
 msgstr "S'inicia l'enviament"
 
-#: functions.php:146
+#: functions.php:162
+#: functions.php:213
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "Campaign dump"
 msgstr "Informació de la campanya"
 
-#: functions.php:150
+#: functions.php:166
+#: functions.php:217
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "Campaign sent"
 msgstr "Campanya enviada"
 
-#: functions.php:153
+#: functions.php:169
+#: functions.php:220
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "Error: Campaign not created."
 msgstr "Error: no s'ha creat la campanya."
 
-#: functions.php:156
+#: functions.php:172
+#: functions.php:223
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "Error: List not found."
 msgstr "Error: llista no trobada."
 
-#: functions.php:161
+#: functions.php:177
+#: functions.php:228
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "End to send"
 msgstr "Acabat l'enviament"
+
+#: functions.php:388
+#@ DeMomentSomTres-MailChimp-Immediate
+msgid "Send"
+msgstr "Enviar"
+
+#: functions.php:397
+#@ DeMomentSomTres-MailChimp-Immediate
+msgid "Check the field to force resend to mailchimp as a published content is updated."
+msgstr "Marca el camp per forçar el reenviament a la llista de distribució al grabar aquesta actualització del contingut."
+
+#: functions.php:398
+#@ DeMomentSomTres-MailChimp-Immediate
+msgid "Force send"
+msgstr "Forçar l'enviament"
+
+#: functions.php:400
+#@ DeMomentSomTres-MailChimp-Immediate
+msgid "The content will be sent to mailchimp when published if linked to any of the active taxonomy terms"
+msgstr "El contingut serà enviat a la lista de distribució quan es publiqui sempre que es trobi vinculat a algun dels termes de les taxonomies actives."
 
