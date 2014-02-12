@@ -84,7 +84,7 @@ function dmst_mc_immediate_validate_options($input) {
             $newLists[$posttype] = $newPostTypes;
         endif;
     endforeach;
-        $newTemplates = array();
+    $newTemplates = array();
     foreach ($templates as $posttype => $taxonomies):
         $newPostTypes = array();
         foreach ($taxonomies as $taxonomy => $terms):
@@ -119,8 +119,8 @@ function dmst_mc_immediate_section_general() {
  * @since 1.0
  */
 function dmst_mc_immediate_section_posttypes() {
-    echo '<p>'.__('This section shows only post types having any taxonomy with informed values.',DMST_MC_IMMEDIATE_TEXT_DOMAIN).'</p>';
-    echo '<p>'.__('If the post type is not selected, NOTHING will be sent after publishing content of that post type.',DMST_MC_IMMEDIATE_TEXT_DOMAIN).'</p>';
+    echo '<p>' . __('This section shows only post types having any taxonomy with informed values.', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . '</p>';
+    echo '<p>' . __('If the post type is not selected, NOTHING will be sent after publishing content of that post type.', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . '</p>';
 }
 
 /**
@@ -146,13 +146,13 @@ function dmst_mc_immediate_option_post_types() {
     $lists = dmst_mc_immediate_lists();
     $post_types = dmst_mc_immediate_get_posttypes();
     foreach ($post_types as $p):
-        $name = 'post-type-' . $p;
+        //$name = 'post-type-' . $p;
         $taxonomies = dmst_mc_immediate_get_posttype_taxonomies($p);
         if (count($taxonomies) > 0):
             add_settings_field('dmst_mc_immediate_' . $p, $p, 'dmst_mc_immediate_field_posttype', 'dmst_mc_immediate', 'dmst_mc_immediate_posttype_options', array('posttype' => $p));
             foreach ($taxonomies as $t):
                 $tname = $t;
-                $terms = get_terms(array($tname), array('hide_empty'=>false));
+                $terms = get_terms(array($tname), array('hide_empty' => false));
                 if (count($terms) > 0):
                     add_settings_section('dmst_mc_immediate_' . $p . '_' . $tname, $p . ' ' . __('taxonomy', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . ': ' . $tname, 'dmst_mc_immediate_section_content', 'dmst_mc_immediate');
                     foreach ($terms as $term):

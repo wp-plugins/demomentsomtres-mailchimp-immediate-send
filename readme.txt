@@ -35,6 +35,10 @@ This portfolio plugin can be installed as any other WordPress plugin.
 
 == Frequently Asked Questions ==
 
+= I've updated a content and I want to send it again =
+
+You have to check the Force Resend in the top right area called 'Send'.
+
 = The post type I want to use does not appear on the admin page =
 
 Check if this post type:
@@ -69,6 +73,10 @@ The message is stored as a campaign named as the list where it is sent with a YY
 TBD
 
 == Changelog ==
+
+= 1.1 = 
+* Metabox added to force resend after publishing.
+* Bug Fix: some posttypes sharing taxonomies where not shown.
 
 = 1.0.3 =
 * catalan translation
