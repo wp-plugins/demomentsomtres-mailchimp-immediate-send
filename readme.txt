@@ -2,7 +2,7 @@
 Contributors: marcqueralt
 Tags: mailchimp, email, newsletter, notification
 Requires at least: 3.7
-Tested up to: 3.7.1
+Tested up to: 3.8.1
 Stable tag: head
 
 == Description ==
