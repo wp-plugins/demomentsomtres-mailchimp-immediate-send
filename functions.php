@@ -157,7 +157,7 @@ function dmst_mc_immediate_sendIfRequired($postID) {
                         $listID = dmst_mc_immediate_getoption_listId($posttype, $taxonomy, $term->slug);
                         if ($listID):
                             $templateID = dmst_mc_immediate_getoption_templateId($posttype, $taxonomy, $term->slug);
-                            $campaign = dmst_mc_immediate_campaign_create($listID, $post->post_content, $templateID);
+                            $campaign = dmst_mc_immediate_campaign_create($listID, dmst_mc_immediate_compose_message($post), $templateID, $post->post_title);
                             if ($campaign):
                                 $log .= date('Y/m/d H:i:s ') . __('Campaign dump', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . print_r($campaign, true) . "\n";
                                 $cid = $campaign['id'];
@@ -182,6 +182,7 @@ function dmst_mc_immediate_sendIfRequired($postID) {
 
 /**
  * @since 1.0
+ * @deprecated 1.1
  */
 function dmst_mc_immediate_content_published($postID) {
     $post = get_post($postID);
@@ -235,9 +236,10 @@ function dmst_mc_immediate_content_published($postID) {
  * @param string $listID list ID in mailchimp
  * @param string $content to be post
  * @param string $templateID template ID in mailchimp
+ * @param string $subject campaign subject @since 1.2
  * @return boolean/mixed false if error, see mailchimp api for structure
  */
-function dmst_mc_immediate_campaign_create($listID, $content, $templateID = null) {
+function dmst_mc_immediate_campaign_create($listID, $content, $templateID = null, $subject = null) {
     $session = dmst_mc_immediate_init();
     $list = $session->call(
             'lists/list', array(
@@ -251,7 +253,11 @@ function dmst_mc_immediate_campaign_create($listID, $content, $templateID = null
             $cname = $list['data'][0]['name'];
             $cfrom = $list['data'][0]['default_from_name'];
             $cemail = $list['data'][0]['default_from_email'];
-            $csubject = $list['data'][0]['default_subject'];
+            if (!isset($subject)):
+                $csubject = $list['data'][0]['default_subject'];
+            else:
+                $csubject = $subject;
+            endif;
             if ($templateID == ''):
                 $content = array(
                     'html' => $content,
@@ -392,6 +398,7 @@ function dmst_mc_immediate_add_metaboxes() {
 /*
  * @since 1.1
  */
+
 function dmst_mc_immediate_resend_metabox($post) {
     if ($post->post_status == 'publish'):
         echo '<p>' . __('Check the field to force resend to mailchimp as a published content is updated.', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . '</p>';
@@ -402,4 +409,14 @@ function dmst_mc_immediate_resend_metabox($post) {
 //    echo '<pre>' . print_r($post, true) . '</pre>';
 }
 
+/**
+ * Composes the message based on post object
+ * @since 1.2
+ * @param mixed $post the post object
+ */
+function dmst_mc_immediate_compose_message($post) {
+    $text = '<h1>'.$post->post_title.'</h1>';
+    $text .= $post->post_content;
+    return $text;
+}
 ?>

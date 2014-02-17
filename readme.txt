@@ -2,7 +2,7 @@
 Contributors: marcqueralt
 Tags: mailchimp, email, newsletter, notification
 Requires at least: 3.7
-Tested up to: 3.8.1
+Tested up to: 3.7.1
 Stable tag: head
 
 == Description ==
@@ -73,6 +73,10 @@ The message is stored as a campaign named as the list where it is sent with a YY
 TBD
 
 == Changelog ==
+
+= 1.2 =
+* Post title as subject of the campaign
+* Post title included in post as h1
 
 = 1.1 = 
 * Metabox added to force resend after publishing.
