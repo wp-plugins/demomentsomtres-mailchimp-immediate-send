@@ -74,6 +74,9 @@ TBD
 
 == Changelog ==
 
+= 1.2.5 =
+* compatibility upgrade admin helper library
+
 = 1.2 =
 * Post title as subject of the campaign
 * Post title included in post as h1
