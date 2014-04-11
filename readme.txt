@@ -1,6 +1,7 @@
-=== DeMomentSomTres MailChimp Immediate Send ===
+=== MailChimp Immediate Send ===
 Contributors: marcqueralt
 Tags: mailchimp, email, newsletter, notification
+Donate link: http://DeMomentSomTres.com
 Requires at least: 3.7
 Tested up to: 3.7.1
 Stable tag: head
