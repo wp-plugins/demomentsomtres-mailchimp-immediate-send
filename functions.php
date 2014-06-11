@@ -26,11 +26,12 @@ function dmst_mc_immediate_init() {
     global $DeMomentSomTres_MC_IM_Session;
 
     if (!isset($DeMomentSomTres_MC_IM_Session)):
-        $api = dmst_admin_helper_get_option(DMST_MC_IMMEDIATE_OPTIONS, 'API', '');
+        $api = DeMomentSomTresTools::get_option(DMST_MC_IMMEDIATE_OPTIONS, 'API', '');
         if ($api == ''):
             return null;
         endif;
-        $DeMomentSomTres_MC_IM_Session = new DeMomentSomTresMailChimp($api);
+//        $DeMomentSomTres_MC_IM_Session = new DeMomentSomTresMailChimp($api);
+        $DeMomentSomTres_MC_IM_Session = DeMomentSomTresTools::MailChimpSession($api);
     else:
         return $DeMomentSomTres_MC_IM_Session;
     endif;
@@ -45,23 +46,24 @@ function dmst_mc_immediate_init() {
 function dmst_mc_immediate_lists() {
     global $dmst_mc_immediate_list_global;
     if (!isset($dmst_mc_immediate_list_global)):
-        $result = array();
+//        $result = array();
         $session = dmst_mc_immediate_init();
-        if ($session):
-            $temp = $session->call('lists/list');
-            if (isset($temp['data'])):
-                foreach ($temp['data'] as $t):
-                    $result[] = array(
-                        'id' => $t['id'],
-                        'name' => $t['name']
-                    );
-                endforeach;
-            endif;
-        endif;
-        $dmst_mc_immediate_list_global = $result;
-    else:
-        $result = $dmst_mc_immediate_list_global;
+//        if ($session):
+//            $temp = $session->call('lists/list');
+//            if (isset($temp['data'])):
+//                foreach ($temp['data'] as $t):
+//                    $result[] = array(
+//                        'id' => $t['id'],
+//                        'name' => $t['name']
+//                    );
+//                endforeach;
+//            endif;
+//        endif;
+//        $dmst_mc_immediate_list_global = $result;
+        $dmst_mc_immediate_list_global = DeMomentSomTresTools::MailChimpGetLists($session, true);
+//        echo '<pre>';print_r($dmst_mc_immediate_list_global);exit;
     endif;
+    $result = $dmst_mc_immediate_list_global;
     return $result;
 }
 
@@ -74,23 +76,23 @@ function dmst_mc_immediate_lists() {
 function dmst_mc_immediate_templates() {
     global $dmst_mc_immediate_template_global;
     if (!isset($dmst_mc_immediate_template_global)):
-        $result = array();
+//        $result = array();
         $session = dmst_mc_immediate_init();
-        if ($session):
-            $temp = $session->call('templates/list');
-            if (isset($temp['user'])):
-                foreach ($temp['user'] as $t):
-                    $result[] = array(
-                        'id' => $t['id'],
-                        'name' => $t['name']
-                    );
-                endforeach;
-            endif;
-        endif;
-        $dmst_mc_immediate_template_global = $result;
-    else:
-        $result = $dmst_mc_immediate_template_global;
+//        if ($session):
+//            $temp = $session->call('templates/list');
+//            if (isset($temp['user'])):
+//                foreach ($temp['user'] as $t):
+//                    $result[] = array(
+//                        'id' => $t['id'],
+//                        'name' => $t['name']
+//                    );
+//                endforeach;
+//            endif;
+//        endif;
+//        $dmst_mc_immediate_template_global = $result;
+        $dmst_mc_immediate_template_global = DeMomentSomTresTools::MailChimpGetTemplates($session);
     endif;
+    $result = $dmst_mc_immediate_template_global;
     return $result;
 }
 
@@ -114,7 +116,28 @@ function dmst_mc_immediate_check_requirements($showMessages = true) {
  * @return array
  */
 function dmst_mc_immediate_getoption_posttypes() {
-    return array_keys(dmst_admin_helper_get_option(DMST_MC_IMMEDIATE_OPTIONS, 'posttypes', array()));
+    return array_keys(DeMomentSomTresTools::get_option(DMST_MC_IMMEDIATE_OPTIONS, 'posttypes', array()));
+}
+
+/**
+ * Get the post taxonomies and terms
+ * @param type $post
+ * @return array an associative array of pairs taxonomy,term_id with key taxonomy-termid
+ * @since 2.0
+ */
+function dmst_mc_immediate_get_postTaxAndTerms($post) {
+    $result = array();
+    $taxonomies = dmst_mc_immediate_get_posttype_taxonomies($post->post_type);
+    foreach ($taxonomies as $taxonomy):
+        $terms = wp_get_post_terms($post->ID, $taxonomy);
+        foreach ($terms as $term):
+            $result[$taxonomy . '-' . $term->term_id] = array(
+                'taxonomomy' => $taxonomy,
+                'term_id' => $term->term_id
+            );
+        endforeach;
+    endforeach;
+    return $result;
 }
 
 /**
@@ -125,56 +148,65 @@ function dmst_mc_immediate_getoption_posttypes() {
 function dmst_mc_immediate_sendIfRequired($postID) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
         return $postID;
+    if (defined('DOING_AJAX') && DOING_AJAX) //Quick Edit doesn't send
+        return $postID;
     $oldStatus = $_POST['hidden_post_status'];
     $resend = isset($_POST['dms3-mcimmediate-send']);
-//    echo '<pre>';
-//    print_r($resend);
-//    echo '</pre>';
-//    exit;
     $post = get_post($postID);
     if (($post->post_status == 'publish' && $oldStatus != $post->post_status) ||
             ($post->post_status == 'publish' && $resend)):
         $posttype = $post->post_type;
         $optionPostTypes = dmst_mc_immediate_getoption_posttypes();
         if (in_array($posttype, $optionPostTypes)):
-            $taxonomies = dmst_mc_immediate_get_posttype_taxonomies($posttype);
-            $optionTaxonomies = dmst_mc_immediate_getoption_posttype_taxonomies($posttype);
-            $taxonomiesToSend = array_intersect($taxonomies, $optionTaxonomies);
-            $oldlog = get_metadata($posttype, $postID, DMST_MC_IMMEDIATE_META_LOG, true);
-            $log = '';
-            $log .= date('Y/m/d H:i:s ') . __('Start to send', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n";
-//        $log .= date('Y/m/d H:i:s ') . __('Available taxonomies', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . print_r($taxonomies, true) . "\n";
-//        $log .= date('Y/m/d H:i:s ') . __('Option taxonomies', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . print_r($optionTaxonomies, true) . "\n";
-//        $log .= date('Y/m/d H:i:s ') . __('Selected taxonomies are:', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . print_r($taxonomiesToSend, true) . "\n";
-            foreach ($taxonomiesToSend as $taxonomy):
-                $terms = wp_get_post_terms($postID, $taxonomy);
-                $optionTerms = dmst_mc_immediate_getoption_posttype_taxonomy_terms($posttype, $taxonomy);
-//            $log .= date('Y/m/d H:i:s ') . __('Available terms:', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . print_r($terms, true) . "\n";
-//            $log .= date('Y/m/d H:i:s ') . __('Option terms:', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . print_r($optionTerms, true) . "\n";
-                foreach ($terms as $term):
-                    if (in_array($term->slug, $optionTerms)):
-//                    $log .= date('Y/m/d H:i:s ') . __('Processing term:', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . $term->slug . "\n";
-                        $listID = dmst_mc_immediate_getoption_listId($posttype, $taxonomy, $term->slug);
-                        if ($listID):
-                            $templateID = dmst_mc_immediate_getoption_templateId($posttype, $taxonomy, $term->slug);
-                            $campaign = dmst_mc_immediate_campaign_create($listID, dmst_mc_immediate_compose_message($post), $templateID, $post->post_title);
-                            if ($campaign):
-                                $log .= date('Y/m/d H:i:s ') . __('Campaign dump', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . print_r($campaign, true) . "\n";
-                                $cid = $campaign['id'];
-                                $success = dmst_mc_immediate_campaign_send($cid);
-                                if ($success):
-                                    $log .= date('Y/m/d H:i:s ') . __('Campaign sent', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n";
-                                endif;
-                            else:
-                                $log .= date('Y/m/d H:i:s ') . __('Error: Campaign not created.', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n";
-                            endif;
-                        else:
-                            $log .= date('Y/m/d H:i:s ') . __('Error: List not found.', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . print_r($listID, true) . "\n";
-                        endif;
+            $post_tax_and_terms = dmst_mc_immediate_get_postTaxAndTerms($post);
+            $options = DeMomentSomTresTools::get_option(DMST_MC_IMMEDIATE_OPTIONS, 'list-groups');
+
+            $log = get_metadata($posttype, $postID, DMST_MC_IMMEDIATE_META_LOG, true);
+            $log = "\n" . $log;
+            $log = date('Y/m/d H:i:s ') . __('Start checking conditions', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . $log;
+
+            $metConditions = array();
+            foreach ($options as $option):
+                if ($option['posttype'] != $posttype)
+                    break;
+                $met = true;
+                foreach ($option['conditions'] as $condition):
+                    $key = $condition['taxonomy'] . '-' . $condition['term'];
+                    if (!array_key_exists($key, $post_tax_and_terms)):
+                        $met = false;
+                        break;
                     endif;
                 endforeach;
+                if ($met)
+                    $metConditions[] = $option;
             endforeach;
-            $log .= date('Y/m/d H:i:s ') . __('End to send', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n";
+
+            $log = date('Y/m/d H:i:s ') . sprintf(__('%s conditions matched', DMST_MC_IMMEDIATE_TEXT_DOMAIN), count($metConditions)) . "\n" . $log;
+
+            $log = date('Y/m/d H:i:s ') . __('Start to send', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . $log;
+
+            foreach ($metConditions as $metCondition):
+                $template = $metCondition['template'];
+                $listid = $metCondition['list'];
+                $groupingid = $metCondition['grouping'];
+                $groupid = $metCondition['group'];
+                $message = dmst_mc_immediate_compose_message($post);
+                $title = $post->post_title;
+                $campaign = dmst_mc_immediate_campaign_create($listid, $message, $template, $title, $groupingid, $groupid);
+                if ($campaign):
+                    $log = date('Y/m/d H:i:s ') . __('Campaign dump', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . print_r($campaign, true) . "\n".$log;
+                    $cid = $campaign['id'];
+                    $success = dmst_mc_immediate_campaign_send($cid);
+                    if ($success):
+                        $log = date('Y/m/d H:i:s ') . __('Campaign sent', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n".$log;
+                    else:
+                        $log = date('Y/m/d H:i:s ') . __('Campaign not sent', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n".$log;
+                    endif;
+                else:
+                    $log = date('Y/m/d H:i:s ') . __('Error: Campaign not created.', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n.$log";
+                endif;
+            endforeach;
+            $log = date('Y/m/d H:i:s ') . __('End to send', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n".$log;
             update_metadata($posttype, $postID, DMST_MC_IMMEDIATE_META_LOG, $log . $oldlog);
         endif;
     endif;
@@ -237,9 +269,11 @@ function dmst_mc_immediate_content_published($postID) {
  * @param string $content to be post
  * @param string $templateID template ID in mailchimp
  * @param string $subject campaign subject @since 1.2
+ * @param string $grouping grouping id
+ * @param string $groupid group name
  * @return boolean/mixed false if error, see mailchimp api for structure
  */
-function dmst_mc_immediate_campaign_create($listID, $content, $templateID = null, $subject = null) {
+function dmst_mc_immediate_campaign_create($listID, $content, $templateID = null, $subject = null, $grouping = null, $groupid = null) {
     $session = dmst_mc_immediate_init();
     $list = $session->call(
             'lists/list', array(
@@ -271,24 +305,51 @@ function dmst_mc_immediate_campaign_create($listID, $content, $templateID = null
                     )
                 );
             endif;
-            $cid = $session->call('campaigns/create', array(
-                'type' => 'regular',
-                'options' => array(
-                    'list_id' => $listID,
-                    'subject' => $csubject,
-                    'from_email' => $cemail,
-                    'from_name' => $cfrom,
-                    'to_name' => $cname,
-                    'template_id' => $templateID,
-                    'title' => $cname . date(' Y/m/d H:i:s')
-                ),
-                'content' => $content
-                    )
-            );
-            return $cid;
-        else:
-            return false;
+            if (!isset($grouping)):
+                $cid = $session->call('campaigns/create', array(
+                    'type' => 'regular',
+                    'options' => array(
+                        'list_id' => $listID,
+                        'subject' => $csubject,
+                        'from_email' => $cemail,
+                        'from_name' => $cfrom,
+                        'to_name' => $cname,
+                        'template_id' => $templateID,
+                        'title' => $cname . date(' Y/m/d H:i:s')
+                    ),
+                    'content' => $content
+                        )
+                );
+            else:
+                $groupname = DeMomentSomTresTools::MailChimpGetGroupName($session, $listID, $grouping, $groupid);
+                $conditions = array();
+                $conditions[] = array(
+                    'field' => 'interests-' . $grouping,
+                    'op' => 'one',
+                    'value' => $groupname
+                );
+                $segments_opts = array(
+                    'match' => 'all',
+                    'conditions' => $conditions
+                );
+                $cid = $session->call('campaigns/create', array(
+                    'type' => 'regular',
+                    'options' => array(
+                        'list_id' => $listID,
+                        'subject' => $csubject,
+                        'from_email' => $cemail,
+                        'from_name' => $cfrom,
+                        'to_name' => $cname,
+                        'template_id' => $templateID,
+                        'title' => $cname . date(' Y/m/d H:i:s')
+                    ),
+                    'content' => $content,
+                    'segment_opts' => $segments_opts,
+                        )
+                );
+            endif;
         endif;
+        return $cid;
     else:
         return false;
     endif;
@@ -335,7 +396,7 @@ function dmst_mc_immediate_get_posttype_taxonomies($p) {
  * @since 1.0
  */
 function dmst_mc_immediate_getoption_posttype_taxonomies($p) {
-    $t1 = dmst_admin_helper_get_option(DMST_MC_IMMEDIATE_OPTIONS, 'lists', array());
+    $t1 = DeMomentSomTresTools::get_option(DMST_MC_IMMEDIATE_OPTIONS, 'lists', array());
     $t = (isset($t1[$p])) ? $t1[$p] : array();
     $taxonomies = array_keys($t);
     return $taxonomies;
@@ -348,7 +409,7 @@ function dmst_mc_immediate_getoption_posttype_taxonomies($p) {
  * @return array the terms
  */
 function dmst_mc_immediate_getoption_posttype_taxonomy_terms($p, $t) {
-    $t1 = dmst_admin_helper_get_option(DMST_MC_IMMEDIATE_OPTIONS, 'lists', array());
+    $t1 = DeMomentSomTresTools::get_option(DMST_MC_IMMEDIATE_OPTIONS, 'lists', array());
     $t2 = (isset($t1[$p])) ? $t1[$p] : array();
     $terms = (isset($t2[$t])) ? $t2[$t] : array();
     return array_keys($terms);
@@ -362,7 +423,7 @@ function dmst_mc_immediate_getoption_posttype_taxonomy_terms($p, $t) {
  * @return string listId
  */
 function dmst_mc_immediate_getoption_listId($p, $tx, $t) {
-    $t1 = dmst_admin_helper_get_option(DMST_MC_IMMEDIATE_OPTIONS, 'lists', array());
+    $t1 = DeMomentSomTresTools::get_option(DMST_MC_IMMEDIATE_OPTIONS, 'lists', array());
     $t2 = (isset($t1[$p])) ? $t1[$p] : array();
     $terms = (isset($t2[$tx])) ? $t2[$tx] : array();
     $listid = (isset($terms[$t])) ? $terms[$t] : null;
@@ -375,9 +436,10 @@ function dmst_mc_immediate_getoption_listId($p, $tx, $t) {
  * @param string $tx taxonomy
  * @param string $t term
  * @return string templateId
+ * @deprecated 2.0
  */
 function dmst_mc_immediate_getoption_templateId($p, $tx, $t) {
-    $t1 = dmst_admin_helper_get_option(DMST_MC_IMMEDIATE_OPTIONS, 'templates', array());
+    $t1 = DeMomentSomTresTools::get_option(DMST_MC_IMMEDIATE_OPTIONS, 'templates', array());
     $t2 = (isset($t1[$p])) ? $t1[$p] : array();
     $terms = (isset($t2[$tx])) ? $t2[$tx] : array();
     $id = (isset($terms[$t])) ? $terms[$t] : null;
@@ -415,8 +477,36 @@ function dmst_mc_immediate_resend_metabox($post) {
  * @param mixed $post the post object
  */
 function dmst_mc_immediate_compose_message($post) {
-    $text = '<h1>'.$post->post_title.'</h1>';
+    $text = '<h1>' . $post->post_title . '</h1>';
     $text .= $post->post_content;
     return $text;
 }
+
+/**
+ * 
+ * @global type $dmst_mc_immediate_tax_terms
+ * @return string
+ * @since 1.2
+ */
+function dmst_mc_immediate_get_tax_terms() {
+    global $dmst_mc_immediate_tax_terms;
+    if (!isset($dmst_mc_immediate_tax_terms)):
+        $posttypes = dmst_mc_immediate_get_posttypes();
+        foreach ($posttypes as $posttype => $posttypename):
+            $taxonomies = dmst_mc_immediate_get_posttype_taxonomies($posttype);
+            foreach ($taxonomies as $taxonomy):
+                $terms = get_terms(array($taxonomy), array('hide_empty' => false));
+                foreach ($terms as $term):
+                    $select[] = array(
+                        'id' => $posttype . '-' . $taxonomy . '-' . $term->term_id,
+                        'name' => $posttype . ' - ' . $taxonomy . ' - ' . $term->name,
+                    );
+                endforeach;
+            endforeach;
+        endforeach;
+        $dmst_mc_immediate_tax_terms = $select;
+    endif;
+    return $dmst_mc_immediate_tax_terms;
+}
+
 ?>

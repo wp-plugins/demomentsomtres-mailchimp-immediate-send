@@ -3,20 +3,24 @@ Contributors: marcqueralt
 Tags: mailchimp, email, newsletter, notification
 Donate link: http://DeMomentSomTres.com
 Requires at least: 3.7
-Tested up to: 3.7.1
+Tested up to: 3.9.1
 Stable tag: head
 
 == Description ==
 
 The DeMomentSomTres Mailchimp Immediate Send plugin allows you to send an automatic message to all the subscribers of some list on content publication.
 
-This plugin is not an alternative to Mandrill the MailChimp platform for transactional email.
+This plugin is **not** an alternative to Mandrill the MailChimp platform for transactional email.
+
+You can get more information at [DeMomentSomTres Digital Marketing Agency](http://demomentsomtres.com/english/wordpress-plugins/mailchimp-immediate-send/).
 
 = Features =
 
 * Selection based on post type (post, page, custom post)
 * Selection based on categories, post tags and any other taxonomy terms
+* Selection based on multiple taxonomy terms.
 * Template Support.
+* Edit area configuration.
 
 = History & Raison d’être =
 
@@ -32,7 +36,7 @@ This portfolio plugin can be installed as any other WordPress plugin.
 
 = Requirements =
 
-* This plugin uses the MailChimp api by Drew McLellan that requires Curl. Your must have it installed in your server. The plugin itself checks if the curl extension is installed.
+* Uses [DeMomentSomTresTools Plugin](http://demomentsomtres.com/english/wordpress-plugins/demomentsomtres-tools/).
 
 == Frequently Asked Questions ==
 
@@ -74,6 +78,13 @@ The message is stored as a campaign named as the list where it is sent with a YY
 TBD
 
 == Changelog ==
+
+= 2.0 =
+* DeMomentSomTres Tools compatibility
+* Administration optimization and redesign
+* Groups of interest management
+* Multiple terms (and) query to activate
+* Prevent sending when quick edit is used
 
 = 1.2.5 =
 * compatibility upgrade admin helper library
