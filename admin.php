@@ -67,32 +67,28 @@ function dmst_mc_immediate_admin_init() {
 function dmst_mc_immediate_validate_options($input) {
     $newListGroups = array();
     foreach ($input['list-groups'] as $config):
-//        if (isset($config['delete']))
-//            break;
-        if ('' == $config['list-group'])
-            break;
-        list($list, $grouping, $group) = explode("-", $config['list-group']);
-        $conditions = array();
-        foreach ($config['conditions'] as $condition):
-            if ('' == $condition['taxonomy-term'])
-                break;
-            list($post, $tax, $term) = explode("-", $condition['taxonomy-term']);
-            if ($post != $config['posttype'])
-                break;
-            $conditions[] = array(
-                'taxonomy' => $tax,
-                'term' => $term
+        if (!isset($config['delete']) && !(''==$config['list-group'] && ''==$config['posttype'])):
+            list($list, $grouping, $group) = explode("-", $config['list-group']);
+            $conditions = array();
+            foreach ($config['conditions'] as $condition):
+                if ('' != $condition['taxonomy-term']):
+                    list($post, $tax, $term) = explode("-", $condition['taxonomy-term']);
+                    $conditions[] = array(
+                        'taxonomy' => $tax,
+                        'term' => $term
+                    );
+                endif;
+            endforeach;
+            $newListGroups[] = array(
+                'posttype' => $config['posttype'],
+                'list' => $list,
+                'grouping' => $grouping,
+                'group' => $group,
+                'conditions' => $conditions,
+                'template' => $config['template'],
+                'locator' => $config['locator'],
             );
-        endforeach;
-        $newListGroups[] = array(
-            'posttype' => $config['posttype'],
-            'list' => $list,
-            'grouping' => $grouping,
-            'group' => $group,
-            'conditions' => $conditions,
-            'template' => $config['template'],
-            'locator' => $config['locator'],
-        );
+        endif;
     endforeach;
     $input['list-groups'] = $newListGroups;
     $input = DeMomentSomTresTools::adminHelper_esc_attr($input);
@@ -121,7 +117,12 @@ function dmst_mc_immediate_section_content() {
     $listGroups = DeMomentSomTresTools::get_option(DMST_MC_IMMEDIATE_OPTIONS, 'list-groups');
     ?>
     <p><?php _e('You can add conditions to specify which contents are sent immediately to MailChimp as they are published', DMST_MC_IMMEDIATE_TEXT_DOMAIN); ?></p>
-    <p><?php _e('Lines set to none will be ignored.', DMST_MC_IMMEDIATE_TEXT_DOMAIN); ?></p>
+    <p>
+        <strong>
+            <?php _e('WARNING', DMST_MC_IMMEDIATE_TEXT_DOMAIN); ?>
+        </strong>:&nbsp;
+        <?php _e('Lines with List and PostType set to none will be ignored.', DMST_MC_IMMEDIATE_TEXT_DOMAIN); ?>
+    </p>
     <?php
     $rownum = 0;
     foreach ($listGroups as $rowid => $config):
@@ -171,10 +172,10 @@ function dmst_mc_immediate_admin_row($rownum, $listid = 0, $groupingid = 0, $gro
     $result .= "<td>";
     $result .= DeMomentSomTresTools::adminHelper_inputArray($prefix, 'locator', $locator, array('echo' => false));
     $result .= "</td></tr>";
-//    $result .= "<tr><th scope='row'>" . __('Delete this entry when saving', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "</th>";
-//    $result .= "<td>";
-//    $result .= DeMomentSomTresTools::adminHelper_inputArray($prefix, 'delete', false, array('type' => 'checkbox', 'echo' => false));
-//    $result .= "</td></tr>";
+    $result .= "<tr><th scope='row'>" . __('Delete this entry when saving', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "</th>";
+    $result .= "<td>";
+    $result .= DeMomentSomTresTools::adminHelper_inputArray($prefix, 'delete', false, array('type' => 'checkbox', 'echo' => false));
+    $result .= "</td></tr>";
     $result.="</table>";
     return $result;
 }

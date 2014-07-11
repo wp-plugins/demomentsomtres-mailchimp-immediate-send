@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: DeMomentSomTres MailChimp Immediate v1.99\n"
+"Project-Id-Version: DeMomentSomTres MailChimp Immediate v2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2014-06-10 16:21:03+0000\n"
+"PO-Revision-Date: 2014-07-11 11:14:55+0000\n"
 "Last-Translator: Marc Queralt <marc@demomentsomtres.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -60,17 +60,17 @@ msgstr "Tipus de contingut"
 msgid "Mailchimp API Key"
 msgstr "API Key de MailChimp"
 
-#: admin.php:114
+#: admin.php:110
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "If the post type is not selected, NOTHING will be sent after publishing content of that post type."
 msgstr "Si no s'ha triat el tipus de contingut corresponent, NO s'enviarà RES quan es publiqui un contingut d'aquest tipus."
 
-#: admin.php:255
+#: admin.php:256
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "--- Do not send ---"
 msgstr "--- No enviar ---"
 
-#: admin.php:273
+#: admin.php:274
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "--- Default ---"
 msgstr "--- Per defecte ---"
@@ -120,55 +120,50 @@ msgstr "Acabat l'enviament"
 msgid "List, Groups and Conditions"
 msgstr "Llistes, grups i condicions"
 
-#: admin.php:113
+#: admin.php:109
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "This section shows only post types with AT LEAST ONE taxonomy containing informed terms."
 msgstr "Aquesta secció mostra només els tipus de post que tenen COM A MÍNIM una taxonomia amb termes informats."
 
-#: admin.php:123
+#: admin.php:119
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "You can add conditions to specify which contents are sent immediately to MailChimp as they are published"
 msgstr "Pots afegir condicions per especificar quins continguts s'envien immediatament a Mailchimp tan bon punt són publicats."
 
-#: admin.php:124
-#@ DeMomentSomTres-MailChimp-Immediate
-msgid "Lines set to none will be ignored."
-msgstr "Les línies que es deixin sense seleccionar s'eliminaran."
-
-#: admin.php:154
+#: admin.php:155
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "List & Group"
 msgstr "Llistes i grups"
 
-#: admin.php:158
+#: admin.php:159
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "Post type"
 msgstr "Tipus de contingut"
 
-#: admin.php:162
+#: admin.php:163
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "Conditions"
 msgstr "Condicions"
 
-#: admin.php:166
+#: admin.php:167
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "Template"
 msgstr "Plantilla"
 
-#: admin.php:170
+#: admin.php:171
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "Template Locator"
 msgstr "Ubicación dins la plantilla"
 
-#: admin.php:289
-#: admin.php:311
-#: admin.php:348
-#: admin.php:366
+#: admin.php:290
+#: admin.php:312
+#: admin.php:349
+#: admin.php:367
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "--- None ---"
 msgstr "--- Cap ---"
 
-#: admin.php:378
+#: admin.php:379
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "Taxonomy & term"
 msgstr "Taxonomia i terme"
@@ -189,23 +184,38 @@ msgstr "S'han trobat que es compleixen %s condicions "
 msgid "Campaign not sent"
 msgstr "Campanya no enviada"
 
-#: functions.php:456
+#: functions.php:457
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "Send"
 msgstr "Enviar"
 
-#: functions.php:466
+#: functions.php:467
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "Check the field to force resend to mailchimp as a published content is updated."
 msgstr "Marca el camp per forçar que Mailchimp faci un reenviament quan es desi aquesta actualització."
 
-#: functions.php:467
+#: functions.php:468
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "Force send"
 msgstr "Forçar l'enviament"
 
-#: functions.php:469
+#: functions.php:470
 #@ DeMomentSomTres-MailChimp-Immediate
 msgid "The content will be sent to mailchimp when published if linked to any of the active taxonomy terms"
 msgstr "El contingut s'enviarà a Mailchimp quan es publiqui si es troba dins algun dels termes seleccionats."
+
+#: admin.php:122
+#@ DeMomentSomTres-MailChimp-Immediate
+msgid "WARNING"
+msgstr "ATENCIÓ"
+
+#: admin.php:124
+#@ DeMomentSomTres-MailChimp-Immediate
+msgid "Lines with List and PostType set to none will be ignored."
+msgstr "Les línies sense llista ni tipus de contingut no es desarà. Serà com si estés marcada la casella d'esborrar."
+
+#: admin.php:175
+#@ DeMomentSomTres-MailChimp-Immediate
+msgid "Delete this entry when saving"
+msgstr "Esborrar quan es desi"
 

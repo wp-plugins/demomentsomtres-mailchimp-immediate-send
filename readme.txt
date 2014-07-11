@@ -79,6 +79,10 @@ TBD
 
 == Changelog ==
 
+= 2.1 =
+* nl2br usage on content sent (thanks to bjarteao)
+* Delete conditions added in order to prevent involuntary deletion of conditions due to bug
+
 = 2.0 =
 * DeMomentSomTres Tools compatibility
 * Administration optimization and redesign

@@ -194,19 +194,19 @@ function dmst_mc_immediate_sendIfRequired($postID) {
                 $title = $post->post_title;
                 $campaign = dmst_mc_immediate_campaign_create($listid, $message, $template, $title, $groupingid, $groupid);
                 if ($campaign):
-                    $log = date('Y/m/d H:i:s ') . __('Campaign dump', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . print_r($campaign, true) . "\n".$log;
+                    $log = date('Y/m/d H:i:s ') . __('Campaign dump', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . print_r($campaign, true) . "\n" . $log;
                     $cid = $campaign['id'];
                     $success = dmst_mc_immediate_campaign_send($cid);
                     if ($success):
-                        $log = date('Y/m/d H:i:s ') . __('Campaign sent', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n".$log;
+                        $log = date('Y/m/d H:i:s ') . __('Campaign sent', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . $log;
                     else:
-                        $log = date('Y/m/d H:i:s ') . __('Campaign not sent', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n".$log;
+                        $log = date('Y/m/d H:i:s ') . __('Campaign not sent', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . $log;
                     endif;
                 else:
                     $log = date('Y/m/d H:i:s ') . __('Error: Campaign not created.', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n.$log";
                 endif;
             endforeach;
-            $log = date('Y/m/d H:i:s ') . __('End to send', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n".$log;
+            $log = date('Y/m/d H:i:s ') . __('End to send', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . $log;
             update_metadata($posttype, $postID, DMST_MC_IMMEDIATE_META_LOG, $log . $oldlog);
         endif;
     endif;
@@ -294,7 +294,8 @@ function dmst_mc_immediate_campaign_create($listID, $content, $templateID = null
             endif;
             if ($templateID == ''):
                 $content = array(
-                    'html' => $content,
+//                  'html' => $content,             //v2.1-
+                    'html' => nl2br($content),      //v2.1+
                     'generate_text' => true,
                 );
             else:
