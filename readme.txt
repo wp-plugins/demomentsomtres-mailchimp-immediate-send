@@ -1,7 +1,7 @@
 === MailChimp Immediate Send ===
 Contributors: marcqueralt
 Tags: mailchimp, email, newsletter, notification
-Donate link: http://DeMomentSomTres.com
+Donate link: http://demomentsomtres.com/english/wordpress-plugins/mailchimp-immediate-send/
 Requires at least: 3.7
 Tested up to: 3.9.1
 Stable tag: head
@@ -78,6 +78,11 @@ The message is stored as a campaign named as the list where it is sent with a YY
 TBD
 
 == Changelog ==
+
+= 2.2 =
+* nl2br changed by apply_filters('the_contents')
+* message if demomentsomtres tools is not installed
+* Campaign name changed to mail subject + date
 
 = 2.1 =
 * nl2br usage on content sent (thanks to bjarteao)

@@ -185,13 +185,14 @@ function dmst_mc_immediate_sendIfRequired($postID) {
 
             $log = date('Y/m/d H:i:s ') . __('Start to send', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . $log;
 
+            $message = dmst_mc_immediate_compose_message($post);
+            $title = $post->post_title;
+
             foreach ($metConditions as $metCondition):
                 $template = $metCondition['template'];
                 $listid = $metCondition['list'];
                 $groupingid = $metCondition['grouping'];
                 $groupid = $metCondition['group'];
-                $message = dmst_mc_immediate_compose_message($post);
-                $title = $post->post_title;
                 $campaign = dmst_mc_immediate_campaign_create($listid, $message, $template, $title, $groupingid, $groupid);
                 if ($campaign):
                     $log = date('Y/m/d H:i:s ') . __('Campaign dump', DMST_MC_IMMEDIATE_TEXT_DOMAIN) . "\n" . print_r($campaign, true) . "\n" . $log;
@@ -294,8 +295,7 @@ function dmst_mc_immediate_campaign_create($listID, $content, $templateID = null
             endif;
             if ($templateID == ''):
                 $content = array(
-//                  'html' => $content,             //v2.1-
-                    'html' => nl2br($content),      //v2.1+
+                    'html' => $content, //v2.1-
                     'generate_text' => true,
                 );
             else:
@@ -306,7 +306,7 @@ function dmst_mc_immediate_campaign_create($listID, $content, $templateID = null
                     )
                 );
             endif;
-            if (!isset($grouping)):
+            if (!isset($grouping) || '' == $grouping): //v2.2+
                 $cid = $session->call('campaigns/create', array(
                     'type' => 'regular',
                     'options' => array(
@@ -316,7 +316,7 @@ function dmst_mc_immediate_campaign_create($listID, $content, $templateID = null
                         'from_name' => $cfrom,
                         'to_name' => $cname,
                         'template_id' => $templateID,
-                        'title' => $cname . date(' Y/m/d H:i:s')
+                        'title' => $csubject . date(' (Y/m/d H:i:s) '),
                     ),
                     'content' => $content
                         )
@@ -479,7 +479,7 @@ function dmst_mc_immediate_resend_metabox($post) {
  */
 function dmst_mc_immediate_compose_message($post) {
     $text = '<h1>' . $post->post_title . '</h1>';
-    $text .= $post->post_content;
+    $text .= apply_filters('the_content',$post->post_content);
     return $text;
 }
 
